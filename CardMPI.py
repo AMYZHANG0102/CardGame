@@ -81,9 +81,32 @@ def main():
         while True:
             current_card, signal = comm.recv(source=0) # Wait for the current card and turn signal
             if signal == "turn":
-                print(f"Player {rank} received card: {current_card}")
-                time.sleep(1) # Simulate time for player to think
-                # Do stuff...
+                print(f"Player {rank} turn. Board card: {current_card}")
+                print(f"Player {rank} hand before: {hand}")
+
+                board_rank = current_card.split(" of ")[0]
+
+                played_card = None
+                for i, card in enumerate(hand):
+                    if card.split(" of ")[0] == board_rank:
+                        played_card = hand.pop(i)   # remove ONE matching card
+                        break
+
+                if played_card is not None:
+                    print(f"Player {rank} played: {played_card}")
+
+                    if len(hand) == 0:
+                        # Empty hand => send "win" signal to dealer
+                        comm.send((played_card, "win"), dest=0)
+                        print(f"Player {rank} has no cards left -> WIN!")
+                    else:
+                        # Normal play: played card becomes new board card
+                        comm.send((played_card, "play"), dest=0)
+                        print(f"Player {rank} hand after: {hand}")
+                else:
+                    # No match => send "pass" signal to dealer
+                    comm.send((current_card, "pass"), dest=0)
+                    print(f"Player {rank} passed (no match).")
             elif signal == "win": # Win signal indicates the game has ended
                 print(f"Player {rank} exits the game.")
                 break
