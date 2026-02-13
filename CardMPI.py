@@ -58,7 +58,7 @@ def main():
                 
                 elif status == "pass":
                     pass_count +=1
-                    if pass_count == size - 2: # If all players have passed
+                    if pass_count == size - 1: # If all players have passed
                         if deck_index + 1 < len(deck):
                             deck_index += 1
                         else:
