@@ -49,6 +49,7 @@ def main():
                 time.sleep(1) # Simulate time for player to respond
   
                 if status == "win":
+                    current_card = updated_board_card
                     # Send win signal to all players
                     for p in range(1, size):
                         comm.send((current_card, end_game_signal), dest=p)
