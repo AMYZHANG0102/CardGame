@@ -27,8 +27,8 @@ def main():
         
         # Send 4 cards to each player
         for player in range(1, size):
-            comm.send(deck[(player-1)*4 : player*4], dest=player)
             print(f"Dealer sent cards to Player {player}")
+            comm.send(deck[(player-1)*4 : player*4], dest=player)
             time.sleep(1) # Simulate time for sending cards
         
         # Start the game by sending the first card
@@ -47,7 +47,7 @@ def main():
                 comm.send((current_card, turn_signal), dest=player)
                 updated_board_card, status = comm.recv(source=player) # Wait for player's response
                 time.sleep(1) # Simulate time for player to respond
-                
+  
                 if status == "win":
                     # Send win signal to all players
                     for p in range(1, size):
@@ -74,15 +74,19 @@ def main():
                     current_card = updated_board_card # Update the current card with player's response
 
     # Player Logic
-    else:
+    elif rank > 0:
         hand = comm.recv(source=0) # Receive initial hand of cards
-        
+        print(f"Player {rank} received hand: {hand}")
+      
         while True:
             current_card, signal = comm.recv(source=0) # Wait for the current card and turn signal
             if signal == "turn":
                 print(f"Player {rank} received card: {current_card}")
+                time.sleep(1) # Simulate time for player to think
                 # Do stuff...
             elif signal == "win": # Win signal indicates the game has ended
                 print(f"Player {rank} exits the game.")
                 break
-            
+
+if __name__ == "__main__":
+    main()
